@@ -1,0 +1,41 @@
+majority_vote: THEORY
+BEGIN
+
+BIT: TYPE = subrange (0,1) CONTAINING 0
+
+a, b, c, z : BIT
+
+%Majority vote specification
+
+spec: bool= z=1 <=> (a+b+c >=2)
+
+%define and gate
+andGate(v,w,x : BIT):bool = x=1 IFF (v =1 AND w =1)
+
+%define OR gate 
+orGate(v,w,x: BIT): bool = x=1 IFF (v=1 OR w=1)
+
+implementation: bool = (exists (d,e,f,g: BIT):
+		       andGate(a,b,d)
+		       AND andGate(b,c,e)
+		       AND andGate(c,a,f)
+		       AND orGate(d,e,g)
+		       AND orGate(g,f,z)
+		       )
+
+implementation_correctness: CONJECTURE
+ implementation
+ IMPLIES
+ spec
+
+%check that antecedant above is not false
+
+implementable: CONJECTURE
+ a=1 AND b=1 AND c=1 AND z=1
+ IMPLIES
+ implementation /= FALSE
+
+END majority_vote
+	       
+	     
+			   

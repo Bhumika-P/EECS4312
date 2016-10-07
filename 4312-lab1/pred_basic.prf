@@ -1,0 +1,99 @@
+(pred_basic
+ (quant_0 0
+  (quant_0-1 nil 3682981159
+   ("" (flatten) (("" (inst -1 "a") nil nil)) nil)
+   ((arb nonempty-type-decl nil pred_basic nil)
+    (a const-decl "arb" pred_basic nil))
+   shostak))
+ (quant_1 0
+  (quant_1-1 nil 3682981876
+   ("" (flatten)
+    (("" (inst -1 "a")
+      (("" (split -1) (("1" (propax) nil nil) ("2" (propax) nil nil))
+        nil))
+      nil))
+    nil)
+   ((arb nonempty-type-decl nil pred_basic nil)
+    (a const-decl "arb" pred_basic nil))
+   shostak))
+ (quant_2 0
+  (quant_2-1 nil 3682982617
+   ("" (flatten) (("" (inst + "a") (("" (inst?) nil nil)) nil)) nil)
+   ((arb nonempty-type-decl nil pred_basic nil)
+    (a const-decl "arb" pred_basic nil))
+   shostak))
+ (quant_3 0
+  (quant_3-1 nil 3682984049
+   ("" (flatten) (("" (skolem!) (("" (inst? 2) nil nil)) nil)) nil)
+   ((arb nonempty-type-decl nil pred_basic nil)) shostak))
+ (quant_4 0
+  (quant_4-1 nil 3682984485
+   ("" (split)
+    (("1" (flatten) (("1" (skolem!) (("1" (inst?) nil nil)) nil)) nil)
+     ("2" (flatten) (("2" (skolem!) (("2" (inst?) nil nil)) nil)) nil))
+    nil)
+   ((arb nonempty-type-decl nil pred_basic nil)) shostak))
+ (quant_5 0
+  (quant_5-1 nil 3682984876
+   ("" (split)
+    (("1" (flatten) (("1" (skolem!) (("1" (inst?) nil nil)) nil)) nil)
+     ("2" (flatten) (("2" (skolem!) (("2" (inst?) nil nil)) nil)) nil))
+    nil)
+   ((arb nonempty-type-decl nil pred_basic nil)) shostak))
+ (quant_6 0
+  (quant_6-1 nil 3682985036
+   ("" (split)
+    (("1" (flatten)
+      (("1" (skeep)
+        (("1" (inst?)
+          (("1" (inst -2 "x")
+            (("1" (split)
+              (("1" (propax) nil nil) ("2" (propax) nil nil)) nil))
+            nil))
+          nil))
+        nil))
+      nil)
+     ("2" (flatten)
+      (("2" (split)
+        (("1" (skolem!) (("1" (inst?) (("1" (flatten) nil nil)) nil))
+          nil)
+         ("2" (skolem!) (("2" (inst?) (("2" (flatten) nil nil)) nil))
+          nil))
+        nil))
+      nil))
+    nil)
+   ((arb nonempty-type-decl nil pred_basic nil)) shostak))
+ (quant_7 0
+  (quant_7-1 nil 3682986029
+   ("" (split)
+    (("1" (flatten)
+      (("1" (split)
+        (("1" (skolem!) (("1" (inst?) (("1" (flatten) nil nil)) nil))
+          nil)
+         ("2" (skolem!) (("2" (inst?) (("2" (flatten) nil nil)) nil))
+          nil))
+        nil))
+      nil)
+     ("2" (flatten)
+      (("2" (skeep)
+        (("2" (inst?)
+          (("2" (inst 2 "x")
+            (("2" (split)
+              (("1" (propax) nil nil) ("2" (propax) nil nil)) nil))
+            nil))
+          nil))
+        nil))
+      nil))
+    nil)
+   ((arb nonempty-type-decl nil pred_basic nil)) shostak))
+ (distrib 0
+          (distrib-1 nil 3682987020
+           ("" (skeep) (("" (assert) nil nil)) nil)
+           ((int_plus_int_is_int application-judgement "int" integers
+             nil)
+            (mult_divides2 application-judgement "(divides(m))" divides
+             nil)
+            (mult_divides1 application-judgement "(divides(n))" divides
+             nil))
+           shostak)))
+

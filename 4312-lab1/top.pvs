@@ -1,0 +1,17 @@
+
+
+top  % [ parameters ]
+		: THEORY
+
+  BEGIN
+
+  % ASSUMING
+   % assuming declarations
+  % ENDASSUMING
+
+  IMPORTING pred_basic
+  IMPORTING majority_vote
+
+  END top
+
+
