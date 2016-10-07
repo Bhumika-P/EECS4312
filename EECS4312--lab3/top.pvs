@@ -1,0 +1,9 @@
+
+% proveit --importchain --clean top.pvs
+top : THEORY
+BEGIN
+   IMPORTING Time
+   IMPORTING test % see 07 slides
+   IMPORTING alert % see 07 slides
+   Importing bridge
+END top

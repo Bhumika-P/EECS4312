@@ -1,0 +1,126 @@
+bridge: THEORY
+BEGIN
+	delta: posreal
+	IMPORTING Time[delta]
+
+	%Used for writing preconditions
+	precond : DATATYPE
+	BEGIN
+		precond: precond?
+	END precond
+
+	PRE (p : bool) : TYPE = { x : precond | p }
+	COLOR: TYPE = {green, red}
+	TURN: TYPE = {mainland, island}
+	d: upfrom(1) %nat1
+	
+	% Monitored variables
+	m_a: [DTIME -> nat] % No of cars on bridge towards island
+	m_b: [DTIME -> nat] % No of cars on island
+	m_c: [DTIME -> nat] % No of cars on bridge twoards mainland
+	s_turn: [DTIME -> TURN] % mainland and island pass variables
+
+	%Controlled variables
+	c_ml: [DTIME -> COLOR] %Mainland traffic light
+	c_il: [DTIME -> COLOR] %Island traffic light
+	c_err: [DTIME -> bool]
+
+	spec_pos_pre(i : POS_DTIME): bool =
+	m_a(i) + m_b(i) + m_c(i) <= d
+	AND (m_a(i) = 0 OR m_c(i) = 0)
+	AND NOT (c_il(i-1) = green AND c_ml(i-1) = green)
+
+
+		
+ 	spec_red_red(i:POS_DTIME)(p: PRE(spec_pos_pre(i))): bool =
+	COND
+		s_turn(i-1) = mainland->
+		COND
+		m_c(i) = 0 -> c_ml(i) = green AND c_il(i) = red,
+		m_c(i) > 0 -> c_ml(i) = red AND c_il(i)= red 
+		ENDCOND,
+		s_turn(i-1) = island->
+		COND
+		m_a(i) = 0 -> c_ml(i) = red AND c_il(i) = green,
+		m_a(i) > 0 -> c_ml(i) = red AND c_il(i) = red
+		ENDCOND
+	ENDCOND
+	
+	spec_pos(i:POS_DTIME)(p: PRE(spec_pos_pre(i))): bool =
+	COND
+		% when both lights are red
+		c_ml(i-1) = red AND c_il(i-1) = red
+			-> spec_red_red(i)(p)
+
+		% Turn mainland traffic light red
+	      , c_ml(i-1) = green
+		AND c_il(i-1) = red
+		AND s_turn(i-1) = island
+		AND 0 < m_b(i) AND m_a(i) = 0
+			-> c_ml(i) = red
+			AND c_il(i) = red
+			AND s_turn(i) = s_turn(i-1) %NC pass variables
+
+		% Do nothing
+	      , c_ml(i-1) = green
+		AND c_il(i-1) = red
+		AND (s_turn(i-1) = mainland OR 0 = m_b(i) OR m_a(i) > 0)
+			-> c_ml(i) = c_ml(i-1)
+			AND c_il(i) = c_il(i-1)
+			AND s_turn(i) = s_turn(i-1)
+
+		% Turn island traffic light red
+	      , c_ml(i-1) = red
+		AND c_il(i-1) = green
+		AND s_turn(i-1) = mainland
+		AND m_b(i) = 0
+			-> c_ml(i) = red
+			AND c_il(i) = red
+			AND s_turn(i) = s_turn(i-1) %NC pass variables
+
+		% Do nothing
+	      , c_ml(i-1) = red
+		AND c_il(i-1) = green
+		AND (s_turn(i-1) = island OR m_b(i)> 0) 
+			-> c_ml(i) = c_ml(i-1)
+			AND c_il(i) = c_il(i-1)
+			AND s_turn(i) = s_turn(i-1)
+	ENDCOND
+
+		% Main Function table
+	spec(i:DTIME): bool =
+	COND
+		i=0
+			-> c_ml(i) = red AND c_il(i) = red
+			AND s_turn(i) = mainland AND c_err(i) = False
+	      , i>0
+		AND m_a(i) + m_b(i) + m_c(i) <= d
+		AND (m_a(i) = 0 OR m_c(i) = 0)
+		AND NOT (c_il(i-1) = green AND c_ml(i-1) = green)
+			-> spec_pos(i)(precond) AND c_err(i) = False
+	      , i>0
+		AND (m_a(i) + m_b(i) + m_c(i) > d
+		OR (m_a(i) > 0 AND m_c(i) > 0)
+		OR (c_il(i-1) = green AND c_ml(i-1) = green))
+			-> c_err(i) = True AND c_ml(i) = red AND c_il(i) = red
+	ENDCOND
+
+	
+	invariant: CONJECTURE
+		(FORALl (i:DTIME) : spec(i))
+		IMPLIES
+		(FORALL (i:DTIME) : NOT (c_ml(i) = green AND c_il(i) = green))
+
+
+	% use case
+	j: DTIME
+	usecase1: CONJECTURE
+		j > 0
+		AND spec(j-1) AND spec(j) AND NOT c_err(j-1)
+		AND c_ml(j-1)=red AND c_il(j-1)=red
+		AND s_turn(j-1) = mainland
+		AND m_a(j) + m_b(j) < d AND m_c(j)=0
+		IMPLIES
+		c_ml(j)=green AND c_il(j) = red AND NOT c_err(j)
+END bridge
+
