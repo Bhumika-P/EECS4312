@@ -1,0 +1,30 @@
+pressure : THEORY
+BEGIN
+delta: posreal = 1 % TR = 1 seconds
+importing Time[delta]
+i: VAR DTIME
+normal, hi: real % Real constants
+ax1: AXIOM (normal < hi)
+
+p: [DTIME -> real] % Pressure
+alarm: [DTIME -> bool]
+
+spec_ft(i:DTIME): bool =
+  COND
+    i=0 -> NOT alarm(0),
+    i>0 ->
+    COND 
+    	 p(i) <= normal -> alarm(i) = False,
+	 normal < p(i) AND  p(i) < hi -> alarm(i) = alarm(i-1),
+	 p(i)>=hi -> alarm(i) = True
+    ENDCOND
+  ENDCOND
+
+
+% Invariant
+  invariant: CONJECTURE
+    (FORALL (i:DTIME): spec_ft(i)) AND NOT p(0)=hi
+    IMPLIES
+    (FORALL (i:DTIME): p(i) = hi => alarm(i))
+
+END pressure

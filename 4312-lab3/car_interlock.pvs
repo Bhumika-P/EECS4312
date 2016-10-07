@@ -1,0 +1,83 @@
+car_interlock[delta:posreal]: THEORY
+BEGIN
+
+importing Time[delta]
+i: VAR DTIME
+SENSOR: TYPE = {on,off}
+ACTUATOR: TYPE = {stop,go}
+x1,x2: [DTIME -> SENSOR]
+y1,y2: [DTIME -> ACTUATOR]
+
+%Function Table
+control_ft(i):bool=
+COND
+i=0 -> y1(0) = stop AND y2(0) = stop,
+i>0 ->
+COND
+	x2(i) = on -> y1(i) = stop AND y2(i) = go,
+	x2(i) = off ->
+	COND
+		x1(i) = on ->
+	        COND
+		y2(i-1) = go -> y1(i) = stop AND y2(i) = stop,
+		y2(i-1) = stop -> y1(i) = go AND y2(i) = stop
+		ENDCOND,
+		x1(i) = off ->
+		COND
+		y2(i-1) = go -> y1(i) = stop AND y2(i) = stop,
+		y2(i-1) = stop -> y1(i) = stop AND y2(i) = stop
+		ENDCOND
+	ENDCOND	
+ENDCOND
+ENDCOND
+
+%Invariant
+inv(i): bool = 
+NOT (y1(i) = go AND y2(i) = go)
+
+inv_holds:CONJECTURE
+(FORALL i: control_ft(i))
+=>
+(FORALL i: inv(i))
+
+%use case
+
+assume: bool =
+control_ft(0)
+AND control_ft(1)
+AND control_ft(2)
+AND control_ft(3)
+AND x1(1) = on AND x2(1) = on AND y1(0) = stop
+AND x1(2) = on AND x2(2) = off
+AND x1(3) = on AND x2(3) = off
+
+%exit car goes first_then entrance car
+use_case: CONJECTURE
+assume=>
+y2(1) = go AND y1(1) = stop
+AND y1(2) = stop AND y2(2) = stop
+AND y2(3) = stop AND y1(3) = go
+
+use_case1: CONJECTURE
+x2(2) = off AND x1(2) = on AND y2(1) = go AND control_ft(2) =>
+y1(2) = stop AND y1(2) = stop 
+
+use_case2: CONJECTURE
+control_ft(4) AND x2(4) = on =>
+y1(4) = stop AND y2(4) = go
+
+use_case3: CONJECTURE
+x2(2) = off AND x1(2) = on AND y2(1) = stop AND control_ft(2) 
+=> 
+y1(2) = go AND y2(2) = stop
+
+use_case4: CONJECTURE
+x2(2) = off AND x1(2) = off AND y2(1) = go AND control_ft(2) 
+=> 
+y1(2) = stop AND y1(2) = stop
+
+use_case5: CONJECTURE
+x2(2) = off AND x1(2) = off AND y2(1) = stop AND control_ft(2) 
+=> 
+y1(2) = stop AND y1(2) = stop
+END car_interlock
