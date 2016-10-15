@@ -1,0 +1,8 @@
+% Exercises for Lab5
+% proveit --importchain --clean top.pvs
+top : THEORY
+BEGIN
+IMPORTING set_ex % set exercises
+IMPORTING function_ex % function exercises
+IMPORTING phone % Phone Specification
+END top
